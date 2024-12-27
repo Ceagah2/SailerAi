@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Header } from "../Header";
-import { NewChat } from "../NewChat";
 
 export const SideBar = ({
   chats,
   onSelectChat,
-  onLoadMore,
+  onToggleCollapse,
 }: {
-  chats: string[];
+  chats: { id: string; name: string }[];
   onSelectChat: (chatId: string | null) => void;
-  onLoadMore: () => void;
+  onToggleCollapse: () => void;
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const handleToggleMenu = () => {
     setIsCollapsed(!isCollapsed);
+    onToggleCollapse(); // Notifica o pai
   };
 
   const handleChatSelect = (chatId: string | null) => {
@@ -24,22 +23,10 @@ export const SideBar = ({
     if (window.innerWidth < 768) setIsCollapsed(true);
   };
 
- const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-   const targetElement = e.target as HTMLElement;
-   const bottom =
-     targetElement.scrollHeight ===
-     targetElement.scrollTop + targetElement.clientHeight;
-   if (bottom) {
-      setIsLoading(true)
-      onLoadMore();
-      setIsLoading(false)
-   }
- };
-
   return (
     <aside
       className={`fixed top-0 left-0 h-full bg-gray-800 transition-all duration-500 ease-in-out z-50 ${
-        isCollapsed ? "w-16 translate-x-0" : "w-full sm:w-64 translate-x-0"
+        isCollapsed ? "w-16" : "w-full sm:w-64"
       }`}
     >
       <div className="flex items-center justify-end h-16 bg-gray-900 pr-4">
@@ -49,30 +36,22 @@ export const SideBar = ({
           className="cursor-pointer"
           onClick={handleToggleMenu}
         />
+
       </div>
-
       {!isCollapsed && (
-        <div className="flex flex-col items-start p-4 transition-all duration-300 ease-in-out">
+        <div className="flex flex-col items-start p-4">
           <Header />
-          <NewChat onClick={() => handleChatSelect(null)} />
-
-          <ul
-            className="mt-4 text-white w-full overflow-y-auto max-h-96"
-            onScroll={handleScroll}
-          >
-            {chats.map((chatId, index) => (
+          <ul className="mt-4 text-white w-full">
+            {chats.map((chat) => (
               <li
-                key={index}
+                key={chat.id}
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
-                onClick={() => handleChatSelect(chatId)}
+                onClick={() => handleChatSelect(chat.name)}
               >
-                {`Chat ${chatId}`}
+                {chat.name}
               </li>
             ))}
           </ul>
-          {isLoading && (
-            <div className="text-center text-white">Carregando...</div>
-          )}
         </div>
       )}
     </aside>

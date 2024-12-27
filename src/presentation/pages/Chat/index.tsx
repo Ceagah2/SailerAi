@@ -1,49 +1,42 @@
-import { useEffect, useState } from "react";
-import { getChats } from "../../../data/services/api";
+import { useState } from "react";
 import { Conversation, SideBar } from "../../components";
 
+const mockChats = [
+  {
+    id: "chat1",
+    name: "General Chat",
+    messages: [{ type: "text", content: "Hello everyone!" }],
+  },
+  {
+    id: "chat2",
+    name: "Work Updates",
+    messages: [{ type: "text", content: "Project deadline is next Monday." }],
+  },
+];
+
 export default function Chat() {
-  const [chats, setChats] = useState<string[]>([]); 
-  const [loading, setLoading] = useState<boolean>(false); 
-  const [hasMoreChats, setHasMoreChats] = useState<boolean>(true); 
-
-  const fetchChats = async (page: number) => {
-    setLoading(true);
-    try {
-      const response = await getChats();
-      console.log('response:', response)
-      const data = await response.json();
-      setChats((prevChats) => [...prevChats, ...data.chats]);
-      setHasMoreChats(data.hasMore); 
-    } catch (error) {
-      console.error("Erro ao buscar chats", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchChats(1); 
-  }, []);
-
-  const handleLoadMoreChats = () => {
-    if (loading || !hasMoreChats) return; 
-    const nextPage = Math.ceil(chats.length / 10) + 1;
-    fetchChats(nextPage);
-  };
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   const handleChatSelect = (chatId: string | null) => {
-    console.log("Chat selecionado:", chatId);
+    setSelectedChat(chatId);
   };
 
+  const selectedMessages =
+    mockChats.find((chat) => chat.name === selectedChat)?.messages || [];
+
   return (
-    <main className="flex justify-start items-center h-screen w-full bg-gray-100">
+    <main className="flex h-screen w-full bg-gray-100">
       <SideBar
-        chats={chats}
+        chats={mockChats}
         onSelectChat={handleChatSelect}
-        onLoadMore={handleLoadMoreChats}
+        onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
       />
-      <Conversation />
+      <Conversation
+        selectedChat={selectedChat}
+        messages={selectedMessages}
+        isSidebarCollapsed={isSidebarCollapsed}
+      />
     </main>
   );
 }
