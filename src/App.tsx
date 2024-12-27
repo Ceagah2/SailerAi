@@ -1,9 +1,9 @@
+import Chat from "./presentation/pages/Chat"
+
 function App() {
 
   return (
-    <main>
-      Sailer Ai Chat
-    </main>
+    <Chat />
   )
 }
 
