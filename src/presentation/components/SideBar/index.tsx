@@ -15,14 +15,15 @@ export const SideBar = ({
 
   const handleToggleMenu = () => {
     setIsCollapsed(!isCollapsed);
-    onToggleCollapse(); // Notifica o pai
+    onToggleCollapse(); 
   };
 
   const handleChatSelect = (chatId: string | null) => {
     onSelectChat(chatId);
-    if (window.innerWidth < 768) setIsCollapsed(true);
+    handleToggleMenu();
   };
 
+  
   return (
     <aside
       className={`fixed top-0 left-0 h-full bg-gray-800 transition-all duration-500 ease-in-out z-50 ${

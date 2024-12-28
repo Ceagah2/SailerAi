@@ -5,12 +5,20 @@ const mockChats = [
   {
     id: "chat1",
     name: "General Chat",
-    messages: [{ type: "text", content: "Hello everyone!" }],
+    messages: [{ id: "message1", type: "text", content: "Hello everyone!" }],
+    sender: "other",
   },
   {
     id: "chat2",
     name: "Work Updates",
-    messages: [{ type: "text", content: "Project deadline is next Monday." }],
+    messages: [
+      {
+        id: "message2",
+        type: "text",
+        content: "Project deadline is next Monday.",
+      },
+    ],
+    sender: "other",
   },
 ];
 
@@ -24,6 +32,7 @@ export default function Chat() {
 
   const selectedMessages =
     mockChats.find((chat) => chat.name === selectedChat)?.messages || [];
+
 
   return (
     <main className="flex h-screen w-full bg-gray-100">
