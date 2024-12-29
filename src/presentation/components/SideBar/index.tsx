@@ -7,7 +7,7 @@ export const SideBar = ({
   onSelectChat,
   onToggleCollapse,
 }: {
-  chats: { id: string; name: string }[];
+  chats: { chat_id: string; participants: string[] }[];
   onSelectChat: (chatId: string | null) => void;
   onToggleCollapse: () => void;
 }) => {
@@ -15,7 +15,7 @@ export const SideBar = ({
 
   const handleToggleMenu = () => {
     setIsCollapsed(!isCollapsed);
-    onToggleCollapse(); 
+    onToggleCollapse();
   };
 
   const handleChatSelect = (chatId: string | null) => {
@@ -23,7 +23,6 @@ export const SideBar = ({
     handleToggleMenu();
   };
 
-  
   return (
     <aside
       className={`fixed top-0 left-0 h-full bg-gray-800 transition-all duration-500 ease-in-out z-50 ${
@@ -37,7 +36,6 @@ export const SideBar = ({
           className="cursor-pointer"
           onClick={handleToggleMenu}
         />
-
       </div>
       {!isCollapsed && (
         <div className="flex flex-col items-start p-4">
@@ -45,11 +43,11 @@ export const SideBar = ({
           <ul className="mt-4 text-white w-full">
             {chats.map((chat) => (
               <li
-                key={chat.id}
+                key={chat.chat_id}
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
-                onClick={() => handleChatSelect(chat.name)}
+                onClick={() => handleChatSelect(chat.chat_id)}
               >
-                {chat.name}
+                {chat.participants}
               </li>
             ))}
           </ul>

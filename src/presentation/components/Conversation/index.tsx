@@ -1,38 +1,38 @@
 import { useState } from "react";
+import { createChat } from "../../../data/services/api";
+import { ChatProps, MessageProps } from "../../pages/Chat/interface";
 import { ChatInput } from "../Input";
-
-interface Message {
-  id: string;
-  type: string;
-  content: string;
-  sender: "me" | "other";
-  status?: "recording" | "texting" | "sending" | "sent";
-}
 
 export const Conversation = ({
   selectedChat,
+  setSelectedChat,
+  chats,
+  setChats,
   messages,
   isSidebarCollapsed,
 }: {
   selectedChat: string | null;
-  messages: Message[];
+  setSelectedChat: (chatId: string | null) => void;
+  chats: ChatProps[];
+  setChats: (chats: ChatProps[]) => void;
+  messages: MessageProps[];
   isSidebarCollapsed: boolean;
 }) => {
-  const [activeMessages, setActiveMessages] = useState<Message[]>(messages);
+  const [activeMessages, setActiveMessages] =
+    useState<MessageProps[]>(messages);
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
 
-
-
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
-    const newMessage: Message = {
+    const newMessage: MessageProps = {
       id: `${Date.now()}`,
+      user_id: "1",
       type: "text",
       content: inputValue,
-      sender: "me",
+      timestamp: new Date(),
     };
 
     setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -66,22 +66,32 @@ export const Conversation = ({
       if (mediaRecorder.state === "recording") {
         mediaRecorder.stop();
       }
-    }, 30000); // Limita a gravação a 30 segundos
+    }, 300000);
   };
 
   const stopRecording = (blob: Blob | null) => {
     setIsRecording(false);
 
     if (blob) {
-      const newMessage: Message = {
+      const newMessage: MessageProps = {
         id: `${Date.now()}`,
+        user_id: "1",
         type: "audio",
         content: URL.createObjectURL(blob),
-        sender: "me",
-        status: "sent",
+        timestamp: new Date(),
       };
       setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
       setAudioBlob(null);
+    }
+  };
+
+  const handleCreateChat = async () => {
+    try {
+      const newChat = await createChat(["user1", "bot_user", "user9"]);
+      setChats([...chats, newChat]);
+      setSelectedChat(newChat.chat_id);
+    } catch (error) {
+      console.error("Erro ao criar chat:", error);
     }
   };
 
@@ -104,65 +114,63 @@ export const Conversation = ({
       </header>
 
       <div className="flex-1 flex flex-col gap-4 p-4 w-full overflow-y-auto">
-        {activeMessages.length > 0 ? (
-          activeMessages.map((message) => (
-            <div
-              key={message.id}
-              className={`${
-                message.type === "audio"
-                  ? ""
-                  : message.sender === "me"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-black"
-              } p-3 rounded-lg`}
-              style={{
-                maxWidth: "70%",
-                alignSelf: message.sender === "me" ? "flex-end" : "flex-start",
-              }}
-            >
-              {message.type === "audio" ? (
-                <div>
-                  <audio controls src={message.content}></audio>
-                </div>
-              ) : (
-                message.content
-              )}
+        {selectedChat ? (
+          activeMessages.length > 0 ? (
+            activeMessages.map((message) => (
+              <div
+                key={message.id}
+                className={`$
+                  {message.type === "audio" ? "" : message.user_id === "1" ? "bg-blue-500 text-white" : "bg-white text-black"} p-3 rounded-lg`}
+                style={{
+                  maxWidth: "70%",
+                  alignSelf:
+                    message.user_id === "1" ? "flex-end" : "flex-start",
+                }}
+              >
+                {message.type === "audio" ? (
+                  <div>
+                    <audio controls src={message.content}></audio>
+                  </div>
+                ) : (
+                  message.content
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-600">Nenhuma mensagem neste chat.</p>
             </div>
-          ))
+          )
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-600">
-              Nenhuma mensagem neste chat. Crie um chat agora mesmo ou escolha
-              um chat para conversar.
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-gray-600 mb-4">
+              Nenhum chat selecionado. Crie um agora mesmo!
             </p>
+            <button
+              onClick={handleCreateChat}
+              className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600"
+            >
+              Criar Chat
+            </button>
           </div>
         )}
       </div>
-      {/* Check other users message status. If status === typing, show typing indicator. if status === recording, show recording audio indicator. Else, do nothing */}
-      <div className="flex items-start justify-start bg-gray-100  gap-2 p-4 w-full">
-        {isRecording && (
-          <div className="animate-pulse text-sm text-gray-500">
-            🎤 Gravando áudio...
-          </div>
-        )}
-      </div>
+
       {selectedChat ? (
-        <div className="flex items-center bg-gray-100  gap-2 p-4 w-full">
+        <div className="flex items-center gap-2 p-4">
+          <button
+            onMouseDown={startRecording}
+            onMouseUp={() => stopRecording(audioBlob)}
+            className="bg-red-500 text-white rounded-full p-3"
+          >
+            🎤
+          </button>
           <ChatInput
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onSendMessage={handleSendMessage}
             onKeyDown={handleInputKeyDown}
           />
-          <button
-            onMouseDown={startRecording}
-            onMouseUp={() => stopRecording(audioBlob)}
-            className={`${
-              isRecording ? "bg-red-500" : "bg-gray-300"
-            } text-white rounded-full p-3 transition duration-300 ease-in-out`}
-          >
-            🎤
-          </button>
         </div>
       ) : null}
     </section>

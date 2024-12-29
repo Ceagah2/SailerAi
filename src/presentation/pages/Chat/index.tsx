@@ -1,50 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getChats, getMessages } from "../../../data/services/api";
 import { Conversation, SideBar } from "../../components";
-
-const mockChats = [
-  {
-    id: "chat1",
-    name: "General Chat",
-    messages: [{ id: "message1", type: "text", content: "Hello everyone!" }],
-    sender: "other",
-  },
-  {
-    id: "chat2",
-    name: "Work Updates",
-    messages: [
-      {
-        id: "message2",
-        type: "text",
-        content: "Project deadline is next Monday.",
-      },
-    ],
-    sender: "other",
-  },
-];
+import { ChatProps, MessageProps } from "./interface";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [chats, setChats] = useState<ChatProps[]>([]);
+  const [messages, setMessages] = useState<MessageProps[]>([]);
 
   const handleChatSelect = (chatId: string | null) => {
     setSelectedChat(chatId);
   };
 
-  const selectedMessages =
-    mockChats.find((chat) => chat.name === selectedChat)?.messages || [];
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await getChats();
+        setChats(response);
+      } catch (error) {
+        console.log("Erro ao buscar chats:", error);
+      }
+    };
 
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedChat) return;
+
+      try {
+        const response = await getMessages(selectedChat);
+        setMessages(response);
+      } catch (error) {
+        console.log("Erro ao buscar mensagens:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [selectedChat]); 
 
   return (
     <main className="flex h-screen w-full bg-gray-100">
       <SideBar
-        chats={mockChats}
+        chats={chats}
         onSelectChat={handleChatSelect}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
       />
       <Conversation
         selectedChat={selectedChat}
-        messages={selectedMessages}
-        isSidebarCollapsed={isSidebarCollapsed}
+        messages={messages}
+        isSidebarCollapsed={isSidebarCollapsed} 
+        setSelectedChat={handleChatSelect} 
+        chats={chats} 
+        setChats={setChats}
       />
     </main>
   );
