@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import WaveSurfer from "wavesurfer.js";
+import { useState } from "react";
 import { ChatInput } from "../Input";
 
 interface Message {
@@ -23,24 +22,8 @@ export const Conversation = ({
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const audioWaveformRef = useRef<HTMLDivElement | null>(null);
-  const waveSurferRef = useRef<WaveSurfer | null>(null);
 
-  useEffect(() => {
-    if (audioWaveformRef.current) {
-      waveSurferRef.current = WaveSurfer.create({
-        container: audioWaveformRef.current,
-        waveColor: "#ddd",
-        progressColor: "#007BFF",
-        cursorColor: "#333",
-        barWidth: 2,
-        height: 50,
-      });
-    }
-    return () => {
-      waveSurferRef.current?.destroy();
-    };
-  }, []);
+
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -74,9 +57,6 @@ export const Conversation = ({
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks, { type: "audio/wav" });
       setAudioBlob(blob);
-      if (waveSurferRef.current) {
-        waveSurferRef.current.load(URL.createObjectURL(blob));
-      }
       stopRecording(blob);
     };
 
@@ -143,7 +123,6 @@ export const Conversation = ({
               {message.type === "audio" ? (
                 <div>
                   <audio controls src={message.content}></audio>
-                  <div ref={audioWaveformRef}></div>
                 </div>
               ) : (
                 message.content
@@ -159,21 +138,31 @@ export const Conversation = ({
           </div>
         )}
       </div>
+      {/* Check other users message status. If status === typing, show typing indicator. if status === recording, show recording audio indicator. Else, do nothing */}
+      <div className="flex items-start justify-start bg-gray-100  gap-2 p-4 w-full">
+        {isRecording && (
+          <div className="animate-pulse text-sm text-gray-500">
+            🎤 Gravando áudio...
+          </div>
+        )}
+      </div>
       {selectedChat ? (
-        <div className="flex items-center gap-2 p-4">
-          <button
-            onMouseDown={startRecording}
-            onMouseUp={() => stopRecording(audioBlob)}
-            className="bg-red-500 text-white rounded-full p-3"
-          >
-            🎤
-          </button>
+        <div className="flex items-center bg-gray-100  gap-2 p-4 w-full">
           <ChatInput
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onSendMessage={handleSendMessage}
             onKeyDown={handleInputKeyDown}
           />
+          <button
+            onMouseDown={startRecording}
+            onMouseUp={() => stopRecording(audioBlob)}
+            className={`${
+              isRecording ? "bg-red-500" : "bg-gray-300"
+            } text-white rounded-full p-3 transition duration-300 ease-in-out`}
+          >
+            🎤
+          </button>
         </div>
       ) : null}
     </section>

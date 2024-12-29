@@ -10,7 +10,7 @@ export const ChatInput = ({
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }) => {
   return (
-    <div className="flex items-center p-4 bg-gray-100">
+    <div className="flex items-center p-4 w-full">
       <input
         type="text"
         className="flex-1 p-2 border rounded-lg"
