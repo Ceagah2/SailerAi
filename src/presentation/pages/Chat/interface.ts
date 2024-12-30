@@ -10,4 +10,5 @@ export interface MessageProps {
   type: string;
   content: string;
   timestamp: Date;
+  sender: string;
 }

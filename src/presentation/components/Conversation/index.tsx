@@ -24,14 +24,15 @@ export const Conversation = ({
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-    const { name } = useUserStore();
+  const { name } = useUserStore();
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
     const newMessage: MessageProps = {
       id: `${Date.now()}`,
-      user_id: "1",
+      sender: "user", 
+      user_id: name ?? "user",
       type: "text",
       content: inputValue,
       timestamp: new Date(),
@@ -39,6 +40,7 @@ export const Conversation = ({
 
     setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputValue("");
+   
   };
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -77,7 +79,8 @@ export const Conversation = ({
     if (blob) {
       const newMessage: MessageProps = {
         id: `${Date.now()}`,
-        user_id: "1",
+        user_id: name ?? "user",
+        sender: "user",
         type: "audio",
         content: URL.createObjectURL(blob),
         timestamp: new Date(),
@@ -121,18 +124,15 @@ export const Conversation = ({
             activeMessages.map((message) => (
               <div
                 key={message.id}
-                className={`$
-                  {message.type === "audio" ? "" : message.user_id === "1" ? "bg-blue-500 text-white" : "bg-white text-black"} p-3 rounded-lg`}
-                style={{
-                  maxWidth: "70%",
-                  alignSelf:
-                    message.user_id === "1" ? "flex-end" : "flex-start",
-                }}
+                className={`${
+                  message.sender === "user"
+                    ? "bg-blue-500 text-white self-end"
+                    : "bg-gray-200 text-black self-start"
+                } p-3 rounded-lg`}
+                style={{ maxWidth: "70%" }}
               >
                 {message.type === "audio" ? (
-                  <div>
-                    <audio controls src={message.content}></audio>
-                  </div>
+                  <audio controls src={message.content}></audio>
                 ) : (
                   message.content
                 )}
@@ -160,19 +160,19 @@ export const Conversation = ({
 
       {selectedChat ? (
         <div className="flex items-center gap-2 p-4">
-          <button
-            onMouseDown={startRecording}
-            onMouseUp={() => stopRecording(audioBlob)}
-            className="bg-red-500 text-white rounded-full p-3"
-          >
-            🎤
-          </button>
           <ChatInput
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onSendMessage={handleSendMessage}
             onKeyDown={handleInputKeyDown}
           />
+          <button
+            onMouseDown={startRecording}
+            onMouseUp={() => stopRecording(audioBlob)}
+            className="bg-gray-500 text-white rounded-full p-3"
+          >
+            🎤
+          </button>
         </div>
       ) : null}
     </section>

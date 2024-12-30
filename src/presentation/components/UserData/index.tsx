@@ -17,8 +17,8 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
   return (
     <div
-      className={`p-2 bg-white shadow-md rounded-md absolute bottom-10 w-60 mx-2 ${
-        isCollapsed ? "w-16" : "w-full"
+      className={`p-2 bg-white shadow-md rounded-md absolute bottom-10 ${
+        isCollapsed ? "w-16" : "w-60  mx-2"
       } flex items-center transition-all duration-300 ease-in-out`}
     >
       <img
