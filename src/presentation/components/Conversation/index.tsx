@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useUserStore } from "../../../data/context/user.context";
 import { createChat } from "../../../data/services/api";
 import { ChatProps, MessageProps } from "../../pages/Chat/interface";
 import { ChatInput } from "../Input";
@@ -23,6 +24,7 @@ export const Conversation = ({
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+    const { name } = useUserStore();
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -87,7 +89,7 @@ export const Conversation = ({
 
   const handleCreateChat = async () => {
     try {
-      const newChat = await createChat(["user1", "bot_user", "user9"]);
+      const newChat = await createChat([name || "usuário", "bot_user"]);
       setChats([...chats, newChat]);
       setSelectedChat(newChat.chat_id);
     } catch (error) {

@@ -1,13 +1,16 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/";
-const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
+const API_URL =
+  "http://localhost:8000";
+// const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
 
 const api = axios.create({
-  baseURL: corsProxyUrl + API_URL, 
+  baseURL:  API_URL, 
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+    "Access-Control-Allow-Headers": "Content-Type",
   },
 });
 
@@ -23,7 +26,9 @@ export const getChats = async () => {
 
 export const createChat = async (participants: string[]) => {
   try {
-    const response = await api.post("/chats", participants);
+    const response = await api.post("/chats", {participants});
+    console.log('RESPONSE POST CHAT:', response)
+    console.log('Participantes do chat:', participants)
     return response.data;
   } catch (error) {
     console.error("Erro ao criar chat:", error);

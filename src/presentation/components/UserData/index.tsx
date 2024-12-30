@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useUserStore } from "../../../data/context/user.context";
 
-
 const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  const { name, photo } = useUserStore();
+  const { name, photo, logout } = useUserStore();
   const [status, setStatus] = useState("online");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -18,8 +17,8 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
   return (
     <div
-      className={`p-2 bg-white shadow-md rounded-md absolute bottom-10 ${
-        isCollapsed ? "w-16" : "w-50"
+      className={`p-2 bg-white shadow-md rounded-md absolute bottom-10 w-60 mx-2 ${
+        isCollapsed ? "w-16" : "w-full"
       } flex items-center transition-all duration-300 ease-in-out`}
     >
       <img
@@ -38,7 +37,7 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
               status === "online" ? "text-green-500" : "text-red-500"
             }`}
           >
-            {status} {status === 'online' ? "🟢" : "🔴"}
+            {status} {status === "online" ? "🟢" : "🔴"}
           </span>
         </div>
       )}
@@ -53,7 +52,7 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
       )}
 
       {isDropdownOpen && !isCollapsed && (
-        <div className="absolute mt-2 bg-gray-100 rounded shadow-md">
+        <div className="absolute mt-2 bg-gray-100 rounded shadow-md right-0">
           <button
             onClick={() => handleStatusChange("online")}
             className={`block w-full text-left px-4 py-2 text-sm ${
@@ -69,6 +68,13 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
             }`}
           >
             Offline 🔴
+          </button>
+          <hr className="border-gray-300 my-1" />
+          <button
+            onClick={logout}
+            className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-100"
+          >
+            Logout 🚪
           </button>
         </div>
       )}
