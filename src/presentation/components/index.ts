@@ -3,4 +3,5 @@ export * from './Header'
 export * from './Input'
 export * from './NewChat'
 export * from './SideBar'
+export * from './UserModal'
 

@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { useUserStore } from "../../../data/context/user.context";
 import { getChats, getMessages } from "../../../data/services/api";
 import { Conversation, SideBar } from "../../components";
+import UserSetup from "../../components/UserModal";
 import { ChatProps, MessageProps } from "./interface";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-  const [chats, setChats] = useState<ChatProps[]>([]);
   const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [chats, setChats] = useState<ChatProps[]>([]);
+  const { name, photo } = useUserStore();
 
   const handleChatSelect = (chatId: string | null) => {
     setSelectedChat(chatId);
@@ -40,6 +43,12 @@ export default function Chat() {
 
     fetchMessages();
   }, [selectedChat]); 
+
+
+  if (!name || !photo) {
+    return <UserSetup />;
+  }
+
 
   return (
     <main className="flex h-screen w-full bg-gray-100">

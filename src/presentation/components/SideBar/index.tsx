@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Header } from "../Header";
+import UserStatusCard from "../UserData";
 
 export const SideBar = ({
   chats,
@@ -53,6 +54,7 @@ export const SideBar = ({
           </ul>
         </div>
       )}
+      <UserStatusCard isCollapsed={isCollapsed} />
     </aside>
   );
 };
