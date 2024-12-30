@@ -53,3 +53,23 @@ export const sendMessage = async (
     throw error;
   }
 };
+
+export const readMessage = async (chatId: string, userId: string, messageId: string) => {
+  try{
+    const response = await api.post(`/chats/${chatId}/read`, {chat_id: chatId, user_id: userId, last_message_id: messageId})
+    return response.data
+  }catch(error){
+    console.log("Erro ao marcar como lida:", error)
+    throw error;
+  }
+}
+
+export const changeStatus = async (userId: string,status: string, chatId: string) => {
+  try{
+    const response = await api.post(`/chats/${chatId}/presence`, { user_id: userId, status });
+    return response.data
+  }catch(error){
+    console.log("Erro ao alterar status:", error);
+    throw error;
+  }
+}
