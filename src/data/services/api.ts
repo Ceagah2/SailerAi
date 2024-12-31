@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:8000";
+  "https://sailer-ai-server-production.up.railway.app";
 // const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
 
 const api = axios.create({
