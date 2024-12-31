@@ -1,37 +1,40 @@
-# SailerAi
+# 🚀 SailerAi
 
-SailerAi é uma aplicação web desenvolvida para comprovar as minhas habilidades em desenvolvimento utilizando a stack React + Tailwind + Zustand + Python .
+SailerAi é uma aplicação web desenvolvida para demonstrar habilidades em desenvolvimento utilizando a stack React + Tailwind + Zustand + Python.
 
-## Visão Geral
+## 🌟 Visão Geral
 
-Este projeto é composto por um frontend construído com React e um backend desenvolvido com Python utilizando o framework FastAPI.  
-O frontend permite que os usuários conversem entre si ou em grupo, enviem audio e chequem o status do(s) usuario(s) que estao na conversa.
+Este projeto é composto por um frontend construído com React e um backend desenvolvido com Python utilizando o framework FastAPI. O frontend permite que os usuários:
 
-## Estrutura do Projeto
+- 💬 Conversem entre si ou em grupo.
+- 🎤 Enviem áudios durante as conversas.
+- 🟢 Verifiquem o status dos usuários na conversa.
+
+## 📂 Estrutura do Projeto
 
 ```bash
 SailerAi:
 └───── index.html
     ├── eslint.config.js # Configurações de lint
     ├── vite.config.ts # Configurações do Vite
-    ├── postcss.config.js # Configurações do postcss
-    ├── tsconfig.node.json # Configurações do typescript
-    ├── tsconfig.app.json # Extensões das configurações do typescript
+    ├── postcss.config.js # Configurações do PostCSS
+    ├── tsconfig.node.json # Configurações do TypeScript
+    ├── tsconfig.app.json # Extensões das configurações do TypeScript
     ├── package.json # Pacotes instalados
-    ├── tsconfig.json # Extensões das configurações do typescript
-    ├── README.md # Voce esta aqui
-    ├── tailwind.config.js # Configurações do tailwind
+    ├── tsconfig.json # Configurações gerais do TypeScript
+    ├── README.md # Você está aqui
+    ├── tailwind.config.js # Configurações do Tailwind
     └── src/
         ├── main.tsx # Ponto principal da aplicação
         ├── App.tsx # Componente principal
         ├── index.css # Folha de estilos inicial
-        ├── data/ # Camada de dados da aplicacao
+        ├── data/ # Camada de dados da aplicação
         │   ├── services/ 
-        │   │   └── api.ts # Consumo da api
+        │   │   └── api.ts # Consumo da API
         │   └── context/
-        │       └── user.context.ts # Contexto do usuario
+        │       └── user.context.ts # Contexto do usuário
         ├── vite-env.d.ts
-        └── presentation/ # Camada de apresentacao da aplicacao
+        └── presentation/ # Camada de apresentação da aplicação
             ├── components/ # Componentes
             │   ├── Header/
             │   │   └── index.tsx
@@ -43,14 +46,14 @@ SailerAi:
             │   │   └── index.tsx
             │   ├── UserModal/
             │   │   └── index.tsx
-            │   ├── index.ts # Exportacao padrao dos componentes
+            │   ├── index.ts # Exportação padrão dos componentes
             │   ├── NewChat/
             │   │   └── index.tsx
             │   └── SideBar/
             │       └── index.tsx
             ├── hooks/ # Hooks customizados
             │   └── useWS.tsx
-            ├── pages/ # Pagina encapsuladora do app
+            ├── pages/ # Página encapsuladora do app
             │   └── Chat/
             │       ├── interface.ts
             │       └── index.tsx
@@ -59,18 +62,17 @@ SailerAi:
 
 ```
 
-## Configuração do Ambiente de Desenvolvimento
+## 🛠️ Configuração do Ambiente de Desenvolvimento
 
-Pré-requisitos
+### Pré-requisitos
+
 Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 - Node.js (versão 14 ou superior)
-
 - npm ou yarn
-
 - Python (versão 3.9 ou superior)
 
-## Instalação
+## 📥 Instalação
 
 Clone este repositório:
 
@@ -98,7 +100,7 @@ Ou com yarn:
 yarn install
 ```
 
-## Executando o Projeto
+## 🚀 Executando o Projeto
 
 Inicie o servidor de desenvolvimento:
 
@@ -114,11 +116,13 @@ Ou com yarn:
 yarn start
 ```
 
-## Acesse a aplicação:
+## 🌐 Acesse a aplicação
 
 Abra o navegador e vá para [LocalHost](http://localhost:5173).
 
-O backend da aplicação está disponível em [Railway](https://sailer-ai-server-production.up.railway.app/docs) ou em [Github](https://github.com/Ceagah2/sailer-ai-server)
+O backend da aplicação está disponível em [Railway](https://sailer-ai-server-production.up.railway.app/docs) ou no [GitHub](https://github.com/Ceagah2/sailer-ai-server).
+
+### 🔧 Solução para CORS
 
 Para resolver problemas de CORS (Cross-Origin Resource Sharing) e permitir a comunicação entre o frontend e o backend, foi necessário adicionar o seguinte middleware no backend:
 
@@ -127,19 +131,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Substitua pelo endereço do frontend em produção
+    allow_origins=["http://localhost:5173"],  # Substitua pelo endereço do frontend em produção
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 ```
 
-Essa configuração permite que o frontend se comunique com o backend sem bloqueios relacionados ao CORS. Certifique-se de substituir '<http://localhost:3000>' pelo endereço correto do frontend em produção.
+Essa configuração permite que o frontend se comunique com o backend sem bloqueios relacionados ao CORS. Certifique-se de substituir `http://localhost:5173` pelo endereço correto do frontend em produção.
 
-## Backend
+## ⚙️ Backend
 
-O backend já corrigido pode ser acessado em <https://sailer-ai-server-production.up.railway.app/docs> ou pelo repositorio <https://github.com/Ceagah2/sailer-ai-server>
+O backend corrigido pode ser acessado em [Railway](https://sailer-ai-server-production.up.railway.app/docs) ou pelo repositório no [GitHub](https://github.com/Ceagah2/sailer-ai-server).
 
-## Frontend
+## 💻 Frontend
 
-O frontend da aplicacao pode ser acessado tambem pelo link : LINK_DA_VERCEL_AQUI
+O frontend da aplicação pode ser acessado pelo link: **[LINK_DA_VERCEL_AQUI](#)**. Certifique-se de substituir pelo link correto após o deploy.
