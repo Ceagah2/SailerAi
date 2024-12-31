@@ -13,6 +13,7 @@ export const Conversation = ({
   setChats,
   messages,
   isSidebarCollapsed,
+  participants
 }: {
   selectedChat: string | null;
   setSelectedChat: (chatId: string | null) => void;
@@ -20,6 +21,7 @@ export const Conversation = ({
   setChats: (chats: ChatProps[]) => void;
   messages: MessageProps[];
   isSidebarCollapsed: boolean;
+  participants: string[]
 }) => {
   const [activeMessages, setActiveMessages] =
     useState<MessageProps[]>(messages);
@@ -114,6 +116,15 @@ export const Conversation = ({
     closeModal();
   };
 
+  const truncateName = (participantsArray: string[]) => {
+    if (participantsArray.length > 3) {
+      return `${participantsArray.slice(0, 3).join(", ")} e mais ${
+        participantsArray.length - 3
+      } `;
+    }
+    return participantsArray.join(", ");
+  }
+
   return (
     <section
       className={`flex flex-col h-screen bg-gray-300 transition-all duration-500 ${
@@ -123,7 +134,7 @@ export const Conversation = ({
     >
       <header className="flex items-center justify-between bg-gray-800 text-white p-4">
         <h2 className="text-lg font-bold">
-          {selectedChat ? `${selectedChat}` : "Nenhum chat selecionado"}
+          {selectedChat ? `${truncateName(participants)}` : "Nenhum chat selecionado"}
         </h2>
         {isRecording && (
           <div className="animate-pulse text-sm text-red-500">
@@ -163,7 +174,7 @@ export const Conversation = ({
               Nenhum chat selecionado. Crie um agora mesmo!
             </p>
             <button
-              onClick={openModal} 
+              onClick={openModal}
               className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600"
             >
               Criar Chat

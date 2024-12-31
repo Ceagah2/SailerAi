@@ -10,10 +10,12 @@ export default function Chat() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [chats, setChats] = useState<ChatProps[]>([]);
+  const [chatParticipants, setChatParticipants] = useState<string[]>([]);
   const { name, photo } = useUserStore();
 
-  const handleChatSelect = (chatId: string | null) => {
+  const handleChatSelect = (chatId: string | null, participants?: string[]) => {
     setSelectedChat(chatId);
+    setChatParticipants(participants ?? []);
   };
 
   useEffect(() => {
@@ -65,6 +67,7 @@ export default function Chat() {
         setSelectedChat={handleChatSelect} 
         chats={chats} 
         setChats={setChats}
+        participants={chatParticipants}
       />
     </main>
   );

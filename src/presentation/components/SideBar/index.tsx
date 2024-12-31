@@ -12,7 +12,7 @@ export const SideBar = ({
   setChats, 
 }: {
   chats: { chat_id: string; participants: string[] }[];
-  onSelectChat: (chatId: string | null) => void;
+  onSelectChat: (chatId: string | null, participants?: string[]) => void;
   onToggleCollapse: () => void;
   setChats: (chats: { chat_id: string; participants: string[] }[]) => void; 
 }) => {
@@ -26,8 +26,8 @@ export const SideBar = ({
     onToggleCollapse();
   };
 
-  const handleChatSelect = (chatId: string | null) => {
-    onSelectChat(chatId);
+  const handleChatSelect = (chatId: string | null, participants?: string[]) => {
+    onSelectChat(chatId, participants);
     handleToggleMenu();
   };
 
@@ -87,7 +87,7 @@ export const SideBar = ({
               <li
                 key={chat.chat_id}
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
-                onClick={() => handleChatSelect(chat.chat_id)}
+                onClick={() => handleChatSelect(chat.chat_id, chat.participants)}
               >
                 {truncateName(chat.participants)}
               </li>
