@@ -50,6 +50,20 @@ export const SideBar = ({
     }
   };
 
+  const truncateName = (userNames: string[]) => {
+    let truncatedName = userNames
+      .map((name) => {
+        return name.length > 8 ? name.substring(0, 8) + "..." : name;
+      })
+      .join(", "); 
+
+    if (truncatedName.length > 15) {
+      truncatedName = truncatedName.substring(0, 15) + "..."; 
+    }
+
+    return truncatedName;
+  };
+
   return (
     <aside
       className={`fixed top-0 left-0 h-full bg-gray-800 transition-all duration-500 ease-in-out z-50 ${
@@ -75,12 +89,11 @@ export const SideBar = ({
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
                 onClick={() => handleChatSelect(chat.chat_id)}
               >
-                {chat.participants.join(", ")}
+                {truncateName(chat.participants)}
               </li>
             ))}
           </ul>
 
-          {/* Botão para criar novo chat */}
           {!isCreatingChat ? (
             <button
               onClick={() => setIsCreatingChat(true)}

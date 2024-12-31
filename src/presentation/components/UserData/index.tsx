@@ -15,6 +15,12 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
     setIsDropdownOpen(false);
   };
 
+  const truncateName = (userName: string) => {
+    if(userName.length > 10) {
+      return userName.substring(0, 10) + "..."
+    }
+  }
+
   return (
     <div
       className={`p-2 bg-white shadow-md rounded-md absolute bottom-10 ${
@@ -31,7 +37,7 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
       {!isCollapsed && (
         <div className="flex flex-col">
-          <h1 className="text-sm font-bold">{name || "Usuário"}</h1>
+          <h1 className="text-sm font-bold">{truncateName(name ?? "") || "Usuário"}</h1>
           <span
             className={`text-xs ${
               status === "online" ? "text-green-500" : "text-red-500"
