@@ -146,4 +146,4 @@ O backend corrigido pode ser acessado em [Railway](https://sailer-ai-server-prod
 
 ## 💻 Frontend
 
-O frontend da aplicação pode ser acessado pelo link: **[LINK_DA_VERCEL_AQUI](#)**. Certifique-se de substituir pelo link correto após o deploy.
+O frontend da aplicação pode ser acessado pelo link: **[Vercel](https://sailer-ai.vercel.app/)** ou pelo tutorial ja seguido a cima.
