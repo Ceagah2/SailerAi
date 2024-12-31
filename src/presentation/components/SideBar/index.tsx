@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { useUserStore } from "../../../data/context/user.context";
+import { createChat } from "../../../data/services/api";
 import { Header } from "../Header";
 import UserStatusCard from "../UserData";
 
@@ -7,12 +9,17 @@ export const SideBar = ({
   chats,
   onSelectChat,
   onToggleCollapse,
+  setChats, 
 }: {
   chats: { chat_id: string; participants: string[] }[];
   onSelectChat: (chatId: string | null) => void;
   onToggleCollapse: () => void;
+  setChats: (chats: { chat_id: string; participants: string[] }[]) => void; 
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [participantsInput, setParticipantsInput] = useState("");
+  const { name } = useUserStore();
 
   const handleToggleMenu = () => {
     setIsCollapsed(!isCollapsed);
@@ -22,6 +29,25 @@ export const SideBar = ({
   const handleChatSelect = (chatId: string | null) => {
     onSelectChat(chatId);
     handleToggleMenu();
+  };
+
+  const handleCreateChat = async () => {
+    if (!participantsInput.trim()) return;
+
+    const participants = participantsInput
+      .split(",")
+      .map((participant) => participant.trim());
+
+    try {
+      const newChat = await createChat([...participants, name ?? "user"]);
+
+      setChats([...chats, newChat]);
+      onSelectChat(newChat.chat_id);
+      setParticipantsInput("");
+      setIsCreatingChat(false);
+    } catch (error) {
+      console.error("Erro ao criar chat:", error);
+    }
   };
 
   return (
@@ -38,6 +64,7 @@ export const SideBar = ({
           onClick={handleToggleMenu}
         />
       </div>
+
       {!isCollapsed && (
         <div className="flex flex-col items-start p-4">
           <Header />
@@ -48,12 +75,45 @@ export const SideBar = ({
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
                 onClick={() => handleChatSelect(chat.chat_id)}
               >
-                {chat.participants}
+                {chat.participants.join(", ")}
               </li>
             ))}
           </ul>
+
+          {/* Botão para criar novo chat */}
+          {!isCreatingChat ? (
+            <button
+              onClick={() => setIsCreatingChat(true)}
+              className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600 mt-4"
+            >
+              Criar Novo Chat
+            </button>
+          ) : (
+            <div className="mt-4">
+              <input
+                type="text"
+                value={participantsInput}
+                onChange={(e) => setParticipantsInput(e.target.value)}
+                placeholder="Digite os participantes separados por vírgula"
+                className="w-full p-2 rounded-md border bg-gray-700 text-white"
+              />
+              <button
+                onClick={handleCreateChat}
+                className="bg-green-500 text-white rounded-full py-2 px-4 hover:bg-green-600 mt-2"
+              >
+                Criar Chat
+              </button>
+              <button
+                onClick={() => setIsCreatingChat(false)}
+                className="bg-red-500 text-white rounded-full py-2 px-4 hover:bg-red-600 mt-2"
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
         </div>
       )}
+
       <UserStatusCard isCollapsed={isCollapsed} />
     </aside>
   );

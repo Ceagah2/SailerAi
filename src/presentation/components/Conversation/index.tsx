@@ -3,6 +3,8 @@ import { useUserStore } from "../../../data/context/user.context";
 import { createChat } from "../../../data/services/api";
 import { ChatProps, MessageProps } from "../../pages/Chat/interface";
 import { ChatInput } from "../Input";
+import Modal from "../Modal";
+
 
 export const Conversation = ({
   selectedChat,
@@ -24,6 +26,8 @@ export const Conversation = ({
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+
   const { name } = useUserStore();
 
   const handleSendMessage = () => {
@@ -31,7 +35,7 @@ export const Conversation = ({
 
     const newMessage: MessageProps = {
       id: `${Date.now()}`,
-      sender: "user", 
+      sender: "user",
       user_id: name ?? "user",
       type: "text",
       content: inputValue,
@@ -40,7 +44,6 @@ export const Conversation = ({
 
     setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputValue("");
-   
   };
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -90,14 +93,25 @@ export const Conversation = ({
     }
   };
 
-  const handleCreateChat = async () => {
-    try {
-      const newChat = await createChat([name || "usuário", "bot_user"]);
-      setChats([...chats, newChat]);
-      setSelectedChat(newChat.chat_id);
-    } catch (error) {
-      console.error("Erro ao criar chat:", error);
-    }
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmParticipants = (participants: string[]) => {
+    const newParticipants = [...participants, name ?? "user"];
+    createChat(newParticipants)
+      .then((newChat) => {
+        setChats([...chats, newChat]);
+        setSelectedChat(newChat.chat_id);
+      })
+      .catch((error) => {
+        console.error("Erro ao criar chat:", error);
+      });
+    closeModal();
   };
 
   return (
@@ -149,7 +163,7 @@ export const Conversation = ({
               Nenhum chat selecionado. Crie um agora mesmo!
             </p>
             <button
-              onClick={handleCreateChat}
+              onClick={openModal} 
               className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600"
             >
               Criar Chat
@@ -175,6 +189,12 @@ export const Conversation = ({
           </button>
         </div>
       ) : null}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={handleConfirmParticipants}
+      />
     </section>
   );
 };

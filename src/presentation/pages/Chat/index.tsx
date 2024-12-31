@@ -56,6 +56,7 @@ export default function Chat() {
         chats={chats}
         onSelectChat={handleChatSelect}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+        setChats={setChats}
       />
       <Conversation
         selectedChat={selectedChat}
