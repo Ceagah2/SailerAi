@@ -1,77 +1,52 @@
-import { useEffect, useRef, useState } from "react";
-
-type PresenceTypes = "online" | "offline"
-
-type PresenceData = {
-  user_id: string;
-  status: PresenceTypes;
-};
-
+import { useEffect, useRef } from "react";
 
 export const useWebSocket = (chatId: string) => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [presence, setPresence] = useState<PresenceData[]>([]);
-  const socketRef = useRef<WebSocket | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  
 
   useEffect(() => {
-    if (!chatId) return;
+    const ws = new WebSocket(`ws://localhost:8000/ws/${chatId}`);
+    wsRef.current = ws;
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/${chatId}`);
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
+    ws.onopen = () => {
+      console.log("WebSocket conectado.");
     };
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket Event:", data);
-
-      switch (data.event) {
-        case "message_received":
-          setMessages((prev) => [...prev, data.data]);
-          break;
-        case "presence_updated":
-          setPresence((prev) => {
-            const updated = prev.filter((p) => p.user_id !== data.data.user_id);
-            return [
-              ...updated,
-              { user_id: data.data.user_id, status: data.data.status },
-            ];
-          });
-          break;
-        case "chat_read":
-          console.log("Chat read event:", data.data);
-          break;
-        default:
-          console.warn("Unknown WebSocket event:", data.event);
-      }
+    ws.onerror = (error) => {
+      console.error("Erro no WebSocket:", error);
     };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+    ws.onclose = () => {
+      console.warn("WebSocket desconectado.");
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
+    ws.onmessage = (event) => {
+      console.log("Mensagem recebida do servidor:", event.data);
     };
 
     return () => {
-      socket.close();
+      ws.close();
     };
   }, [chatId]);
 
-  const sendMessage = (message: { user_id: string; content: string }) => {
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify(message));
+  const sendWsMessage = (message: string) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(message);
+
     } else {
-      console.error("WebSocket is not open");
+      console.warn("WebSocket ainda não está conectado. Tentando reconectar...");
+    }
+  };
+  const onMessage = (callback: (data: string) => void) => {
+    if (wsRef.current) {
+      wsRef.current.onmessage = (event) => {
+        callback(event.data);
+      };
+    } else {
+      console.warn("WebSocket não está conectado.");
     }
   };
 
-  return {
-    messages,
-    presence,
-    sendMessage,
-  };
+  return { sendWsMessage, onMessage };
 };

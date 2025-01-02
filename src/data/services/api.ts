@@ -1,7 +1,9 @@
 import axios from "axios";
+import { MessageProps } from "../../presentation/components/Conversation/Conversation.interface";
 
-const API_URL =
-  "https://sailer-ai-server-production.up.railway.app";
+const API_URL = "http://localhost:8000";
+// const API_URL =
+//   "https://sailer-ai-server-production.up.railway.app";
 // const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
 
 const api = axios.create({
@@ -36,6 +38,8 @@ export const createChat = async (participants: string[]) => {
   }
 };
 
+
+
 export const getMessages = async(chatId: string) => {
   try{
     const response = await api.get(`/chats/${chatId}/messages`);
@@ -48,7 +52,7 @@ export const getMessages = async(chatId: string) => {
 
 export const sendMessage = async (
   chatId: string,
-  messageData: { text: string }
+  messageData: MessageProps
 ) => {
   try {
     const response = await api.post(`/chats/${chatId}/messages`, messageData);
