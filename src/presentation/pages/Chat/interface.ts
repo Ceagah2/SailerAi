@@ -9,6 +9,6 @@ export interface MessageProps {
   user_id: string;
   type: string;
   content: string;
-  timestamp: Date;
+  timestamp: string;
   sender: string;
 }
