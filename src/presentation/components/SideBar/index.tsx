@@ -17,8 +17,6 @@ export const SideBar = ({
   setChats: (chats: { chat_id: string; participants: string[] }[]) => void; 
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isCreatingChat, setIsCreatingChat] = useState(false);
-  const [participantsInput, setParticipantsInput] = useState("");
   const { name } = useUserStore();
 
   const handleToggleMenu = () => {
@@ -32,19 +30,17 @@ export const SideBar = ({
   };
 
   const handleCreateChat = async () => {
-    if (!participantsInput.trim()) return;
+    // if (!participantsInput.trim()) return;
 
-    const participants = participantsInput
-      .split(",")
-      .map((participant) => participant.trim());
+    // const participants = participantsInput
+    //   .split(",")
+    //   .map((participant) => participant.trim());
 
     try {
-      const newChat = await createChat([...participants, name ?? "user"]);
+      const newChat = await createChat([name ?? "user"]);
 
       setChats([...chats, newChat]);
       onSelectChat(newChat.chat_id);
-      setParticipantsInput("");
-      setIsCreatingChat(false);
     } catch (error) {
       console.error("Erro ao criar chat:", error);
     }
@@ -94,36 +90,14 @@ export const SideBar = ({
             ))}
           </ul>
 
-          {!isCreatingChat ? (
+
             <button
-              onClick={() => setIsCreatingChat(true)}
+              onClick={() => handleCreateChat()}
               className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600 mt-4"
             >
               Criar Novo Chat
             </button>
-          ) : (
-            <div className="mt-4">
-              <input
-                type="text"
-                value={participantsInput}
-                onChange={(e) => setParticipantsInput(e.target.value)}
-                placeholder="Digite os participantes separados por vírgula"
-                className="w-full p-2 rounded-md border bg-gray-700 text-white"
-              />
-              <button
-                onClick={handleCreateChat}
-                className="bg-green-500 text-white rounded-full py-2 px-4 hover:bg-green-600 mt-2"
-              >
-                Criar Chat
-              </button>
-              <button
-                onClick={() => setIsCreatingChat(false)}
-                className="bg-red-500 text-white rounded-full py-2 px-4 hover:bg-red-600 mt-2"
-              >
-                Cancelar
-              </button>
-            </div>
-          )}
+         
         </div>
       )}
 
