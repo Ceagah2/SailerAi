@@ -4,6 +4,7 @@ import { createChat, getMessages, sendMessage } from "../../../data/services/api
 import { useWebSocket } from "../../hooks/useWS";
 import { ChatProps, MessageProps } from "../../pages/Chat/interface";
 import { ChatInput } from "../Input";
+import Message from "../Message";
 
 export const Conversation = ({
   selectedChat,
@@ -26,14 +27,14 @@ export const Conversation = ({
     useState<MessageProps[]>(messages);
   const [inputValue, setInputValue] = useState("");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [presence, setPresence] = useState<"online" | "typing" | "recording">(
+  const [presence, setPresence] = useState<"online" | "typing" | "recording" | "offline">(
     "online"
   );
   const { sendWsMessage, onMessage } = useWebSocket(selectedChat ?? "");
   const { name } = useUserStore();
 
   useEffect(() => {
-    let timeout: number | undefined;
+    let timeout: NodeJS.Timeout;
 
     if (presence === "typing") {
       timeout = setTimeout(() => setPresence("online"), 2000);
@@ -47,26 +48,39 @@ export const Conversation = ({
   useEffect(() => {
     if (!selectedChat) return;
 
-    const handleBotMessage = (message: MessageProps) => {
-      setActiveMessages((prevMessages) => [...prevMessages, message]);
-    };
-
     onMessage((data: string) => {
       try {
-        const message: MessageProps = JSON.parse(data);
-        handleBotMessage(message);
+        const parsedData = JSON.parse(data);
+
+        if (parsedData.event === "presence_updated") {
+          setPresence(parsedData.status); 
+        }
       } catch (error) {
-        console.error("Erro ao processar mensagem do bot:", error);
+        console.error("Erro ao processar evento de presença:", error);
       }
     });
   }, [selectedChat, onMessage]);
+
+  useEffect(() => {
+    const fetchChatMessages = async () => {
+      try {
+        const response = await getMessages(selectedChat ?? "");
+        setActiveMessages(response);
+
+      } catch (error) {
+        console.log("Erro ao buscar mensagens:", error);
+      }
+    };
+
+    fetchChatMessages();
+
+  },[selectedChat])
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
     const newMessage: MessageProps = {
       id: `${Date.now()}`,
-      sender: "user",
       user_id: name ?? "user",
       type: "text",
       content: inputValue,
@@ -77,10 +91,6 @@ export const Conversation = ({
     setInputValue("");
     sendWsMessage(newMessage.content);
     sendMessage(selectedChat ?? "", newMessage);
-
-    setInterval(() => {
-      getMessages(selectedChat ?? "");
-    } ,10000)
 
     setPresence("typing");
   };
@@ -93,48 +103,53 @@ export const Conversation = ({
     }
   };
 
-  const startRecording = async () => {
-    setPresence("recording");
+ const startRecording = async () => {
+   setPresence("recording");
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
+   try {
+     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+     const mediaRecorder = new MediaRecorder(stream);
 
-    const chunks: Blob[] = [];
-    mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+     const chunks: Blob[] = [];
+     mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
 
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks, { type: "audio/wav" });
-      setAudioBlob(blob);
-      stopRecording(blob);
-    };
+     mediaRecorder.onstop = () => {
+       const blob = new Blob(chunks, { type: "audio/wav" });
+       setAudioBlob(blob);
+       stopRecording(blob);
+     };
 
-    mediaRecorder.start();
+     mediaRecorder.start();
 
-    setTimeout(() => {
-      if (mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
-      }
-    }, 300000);
-  };
+     setTimeout(() => {
+       if (mediaRecorder.state === "recording") {
+         mediaRecorder.stop();
+       }
+     }, 300000);
+   } catch (error) {
+     console.error("Erro ao iniciar gravação de áudio:", error);
+     setPresence("online");
+   }
+ };
 
-  const stopRecording = (blob: Blob | null) => {
-    setPresence("online");
+ const stopRecording = (blob: Blob | null) => {
+   setPresence("online");
 
-    if (blob) {
-      const newMessage: MessageProps = {
-        id: `${Date.now()}`,
-        user_id: name ?? "user",
-        sender: "user",
-        type: "audio",
-        content: URL.createObjectURL(blob),
-        timestamp: new Date().toISOString(),
-      };
-      setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
-      sendWsMessage(URL.createObjectURL(blob));
-      
-      setAudioBlob(null);
-    }
-  };
+   if (blob) {
+     const newMessage: MessageProps = {
+       id: `${Date.now()}`,
+       user_id: name ?? "user",
+       type: "audio",
+       content: URL.createObjectURL(blob),
+       timestamp: new Date().toISOString(),
+     };
+
+     setActiveMessages((prevMessages) => [...prevMessages, newMessage]);
+     sendWsMessage(URL.createObjectURL(blob));
+     setAudioBlob(null);
+   }
+ };
+
 
   const handleConfirmParticipants = () => {
     const newParticipants = [name ?? "user"];
@@ -173,28 +188,21 @@ export const Conversation = ({
         <div className="text-sm">
           {presence === "typing" && "Digitando..."}
           {presence === "recording" && "Gravando áudio..."}
+          {presence === "online" && "Online"}
+          {presence === "offline" && "Offline"}
         </div>
       </header>
 
       <div className="flex-1 flex flex-col gap-4 p-4 w-full overflow-y-auto">
         {selectedChat ? (
           activeMessages.length > 0 ? (
-            activeMessages.map((message, index) => (
-              <div
-                key={index}
-                className={`${
-                  message.sender === "user"
-                    ? "bg-blue-500 text-white self-end"
-                    : "bg-gray-200 text-black self-start"
-                } p-3 rounded-lg`}
-                style={{ maxWidth: "70%" }}
-              >
-                {message.type === "audio" ? (
-                  <audio controls src={message.content}></audio>
-                ) : (
-                  message.content
-                )}
-              </div>
+            activeMessages.map((message) => (
+              <Message
+                key={message.id}
+                message={message}
+                currentUserId={name ?? "user"}
+                
+              />
             ))
           ) : (
             <div className="flex items-center justify-center h-full">

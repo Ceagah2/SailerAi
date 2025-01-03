@@ -7,8 +7,7 @@ export interface ChatProps {
 export interface MessageProps {
   id: string;
   user_id: string;
-  type: string;
+  type: "text" | "audio" | "image";
   content: string;
   timestamp: string;
-  sender: string;
 }
