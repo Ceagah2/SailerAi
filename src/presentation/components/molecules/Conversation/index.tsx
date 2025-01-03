@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useUserStore } from "../../../data/context/user.context";
-import { createChat, getMessages, sendMessage } from "../../../data/services/api";
-import { useWebSocket } from "../../hooks/useWS";
-import { ChatProps, MessageProps } from "../../pages/Chat/interface";
-import { ChatInput } from "../Input";
-import Message from "../Message";
+import { useUserStore } from "../../../../data/context/user.context";
+import { createChat, getMessages, sendMessage } from "../../../../data/services/api";
+import { useWebSocket } from "../../../hooks/useWS";
+import { ChatProps, MessageProps } from "../../../pages/Chat/interface";
+import { ChatInput } from "../../atoms/Input";
+import Message from "../../atoms/Message";
 
 export const Conversation = ({
   selectedChat,

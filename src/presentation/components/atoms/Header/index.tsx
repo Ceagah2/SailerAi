@@ -1,4 +1,5 @@
-import { IMAGE_URL } from "../../utils/constants";
+import { IMAGE_URL } from "../../../utils/constants";
+
 
 export const Header = () => {
   return (

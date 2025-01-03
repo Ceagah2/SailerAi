@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useUserStore } from "../../../data/context/user.context";
+import { useUserStore } from "../../../../data/context/user.context";
 
 
 const UserSetup = () => {

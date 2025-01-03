@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useUserStore } from "../../../data/context/user.context";
-import { createChat } from "../../../data/services/api";
-import { Header } from "../Header";
-import UserStatusCard from "../UserData";
+import { useUserStore } from "../../../../data/context/user.context";
+import { createChat } from "../../../../data/services/api";
+import { Header, UserData } from "../../atoms";
+
+
+
 
 export const SideBar = ({
   chats,
@@ -83,25 +85,25 @@ export const SideBar = ({
               <li
                 key={chat.chat_id}
                 className="py-2 px-4 cursor-pointer hover:bg-gray-700 rounded-md"
-                onClick={() => handleChatSelect(chat.chat_id, chat.participants)}
+                onClick={() =>
+                  handleChatSelect(chat.chat_id, chat.participants)
+                }
               >
                 {truncateName(chat.participants)}
               </li>
             ))}
           </ul>
 
-
-            <button
-              onClick={() => handleCreateChat()}
-              className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600 mt-4"
-            >
-              Criar Novo Chat
-            </button>
-         
+          <button
+            onClick={() => handleCreateChat()}
+            className="bg-blue-500 text-white rounded-full py-2 px-4 hover:bg-blue-600 mt-4"
+          >
+            Criar Novo Chat
+          </button>
         </div>
       )}
 
-      <UserStatusCard isCollapsed={isCollapsed} />
+      <UserData isCollapsed={isCollapsed} />
     </aside>
   );
 };

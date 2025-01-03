@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "../../../data/context/user.context";
 import { getChats, getMessages } from "../../../data/services/api";
-import { Conversation, SideBar } from "../../components";
-import UserSetup from "../../components/UserModal";
+import UserSetup from "../../components/atoms/UserModal";
+import { Conversation, SideBar } from "../../components/molecules";
 import { ChatProps, MessageProps } from "./interface";
 
 export default function Chat() {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MessageProps } from "../../presentation/components/Conversation/Conversation.interface";
+import { MessageProps } from "../../presentation/components/molecules/Conversation/Conversation.interface";
 
 const API_URL = "http://localhost:8000";
 // const API_URL =

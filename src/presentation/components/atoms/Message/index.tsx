@@ -1,7 +1,5 @@
 import React from "react";
-import { MessageProps } from "../../pages/Chat/interface";
-
-
+import { MessageProps } from "../../molecules/Conversation/Conversation.interface";
 
 type TypeMessage = {
   message: MessageProps;

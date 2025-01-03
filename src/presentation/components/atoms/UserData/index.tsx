@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { useUserStore } from "../../../data/context/user.context";
+import { useUserStore } from "../../../../data/context/user.context";
 
-const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
+
+
+export const UserData = ({ isCollapsed }: { isCollapsed: boolean }) => {
   const { name, photo, logout } = useUserStore();
   const [status, setStatus] = useState("online");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -88,4 +90,4 @@ const UserStatusCard = ({ isCollapsed }: { isCollapsed: boolean }) => {
   );
 };
 
-export default UserStatusCard;
+
